@@ -144,7 +144,7 @@ unity 支持中文变量
 
 public变量可在unity的窗口中修改
 
-# 2.Unity
+# 2.Unity基本
 ## 一些组件
 rigidbody：刚体，赋予物件一些物理量
 
@@ -225,7 +225,7 @@ spirit mode设置为motiple
 
 调整位置：在canvas中修改基准点，使UI在各比例中位置保持。
 
-## 2
+# 3.unity进阶
 对话框：新建UI—>panel，调整位置与大小，透明度等
 
 再在子项目添加UI—>text，修改内容
@@ -433,7 +433,23 @@ awake()
 
 
 
-# 3.关于其他教程
+# 4.Unity for Android
+
+## 1.
+
+
+
+
+
+
+
+
+
+
+
+
+
+# *.关于其他教程
 
 
 

@@ -1,5 +1,7 @@
 [TOP]
 
+
+
 # 一.面向对象（C#）
 
 相关视频
@@ -578,7 +580,7 @@ override，然后你懂的
 *接口就是一个规范 能力*
 
 ```
-public intrtface I...able
+public intertface I...able
 {
 	成员;//成员不允许添加访问修饰符，默认public；不能有方法体。
 	//不能写字段，但是可以写 自动属性
