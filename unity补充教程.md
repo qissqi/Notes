@@ -2,6 +2,86 @@
 
 
 
+## -对象池
+
+作用：优化相同物体的大量生成
+
+
+
+[教程视频（11：00）]: https://www.bilibili.com/video/BV1xb4y1D7PZ?spm_id_from=333.999.0.0	"2d俯视角射击-子弹"
+
+
+
+```
+public class ObjectPool
+{
+	// 单例化对象池控制脚本
+	private static ObjectPool instance;
+	public static ObjectPool Instance
+	{
+		get
+		{
+			if(instance==null)
+				instance = new ObjectPool();
+			return instance;
+		}
+	}
+	
+	// 使用字典objectPool，用名称(string)作为key 管理多对象池
+	private Dictionary<string,Queue<GameObject>> objectPool = new ...;
+	
+	private GameObject pool; //仅作为所有对象池的父物体使用
+	
+	//从对象池取出物体
+	public GameObject GetObject(GameObject prefab)
+	{
+		GameObject _object; //用于接收对象池内物体
+		
+		if(!objectPool.ContainsKey(prefab.name)  	// 若不存在该对象池
+		||objectPool[prefab.name].Count==0) 	 	//	或者对象池内为空
+		{											// ***初始化整个对象池***
+			_object = GameObject.Instantiate(prerfab); //则生成该物体
+			PushObject(_object);					   //并放回对象池
+		
+			if(pool == null)
+				pool = new GameObject("ObjectPool"); //生成对象池父物体(总对象池)
+			GameObject chidPool = GameObject.Find(prefab.name+"Pool"); 	//查找指定对象池
+			if(!childPool)												//若不存在
+			{
+				childPool = new GameObject(prefab.name +"Pool");		//则生成这个特定对象池
+				childPool.transform.SetParent(pool.transform);			//放入总对象池中
+			}
+			_object.transform.SetParent(childPool.transform);	//将生成物体设置为特定对象池的子物体
+		}
+		
+		_object = objectPool[prefab.name].Dequeue();  	//将指定物体从指定对象池中取出
+		_object.SetActive(true);
+		return _object;
+		
+	}
+	
+	//将物体放回对象池
+	public void PushObject(GameObject prefab)
+	{
+		string _name = prefab.name.Replace("(Clone)",string.Empty);	//还原名称用于字典查找
+		
+		if(!objectPool.ContainsKey(_name))					  //若字典中没有特定对象池
+			objectPool.Add(_name,new Queue<GameObject>());	  //那就建一个
+		
+		objectPool[_name].Enqueue(prefab);	//塞回对象池
+		prefab.SetActive(false);
+		
+	}
+	
+}
+```
+
+
+
+
+
+
+
 ## -冲锋与残影
 
 使用组件sprite render，
@@ -11,7 +91,7 @@
 color颜色，控制时间的参数（起始与持续）；不透明度变化（初始为1；变化乘以小于一的数）
 
 
-### 第一个项目代码部分
+### 残影脚本
 
 ####使用`OnEnable(){}` ：组件启用时
 
@@ -40,20 +120,20 @@ if(Time.time>= activeStart + activeTime)
 
 **最后将该项目存为预置即可**
 
-###第二个项目代码部分（控制所有对象池）
+### 对象池脚本
 创建脚本ShadowPool
-####设为单例
-	public static ShadowPool instance;
+#### 设为单例
+​	public static ShadowPool instance;
 
 ​	void awake(){ instance = this; }
 
 ----
 
-1.获得之前的残影预制体GameObject，定义残影数量的数组，定义GameObject的队列
+1. 获得之前的残影预制体GameObject，定义残影数量的数组，定义GameObject的队列
 
 `private Queue<GameObject> availabkeObjects = new Queue<GameObject>();`
 
-2.初始化对象池
+2. 初始化对象池
 
 ​	public void FillPool()
 ​	循环：var newShadow = Instantiate(shadowPrefab);
@@ -63,13 +143,13 @@ if(Time.time>= activeStart + activeTime)
 
 在awake中调用
 
-3.取消启用，返回对象池
+3. 取消启用，返回对象池
 
 ​	public void ReturnPool(GameObject gameObject){
 ​	gameObject.SetActive(false);
 ​	availableObjects.Enqueue(gameObject);
 
-4.生成
+4. 生成
 
 ​	public GameObject GetFromPool(){
 ​	
